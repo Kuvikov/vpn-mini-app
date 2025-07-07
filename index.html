@@ -5,17 +5,28 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         body { font-family: Arial, sans-serif; text-align: center; margin-top: 50px; }
-        button { padding: 10px 20px; font-size: 16px; }
+        button { padding: 10px 20px; font-size: 16px; cursor: pointer; }
     </style>
 </head>
 <body>
     <h1>VPN Connector</h1>
     <button id="connectButton">Подключиться к VPN</button>
     <script>
+        // Проверяем, инициализирован ли Telegram.WebApp
+        if (typeof Telegram.WebApp === 'undefined') {
+            console.error('Telegram WebApp не загружен');
+            alert('Ошибка: Telegram WebApp не инициализирован');
+        } else {
+            Telegram.WebApp.ready();
+            console.log('Telegram WebApp готов');
+        }
+
         const connectButton = document.getElementById('connectButton');
         connectButton.addEventListener('click', () => {
+            console.log('Кнопка нажата, отправка данных...');
             Telegram.WebApp.sendData(JSON.stringify({ action: "get_vpn_config" }));
-            Telegram.WebApp.close();  // Закрывает Mini App после нажатия
+            console.log('Данные отправлены');
+            Telegram.WebApp.close();
         });
     </script>
 </body>
