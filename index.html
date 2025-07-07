@@ -6,28 +6,49 @@
     <style>
         body { font-family: Arial, sans-serif; text-align: center; margin-top: 50px; }
         button { padding: 10px 20px; font-size: 16px; cursor: pointer; }
+        #debug { color: red; margin-top: 20px; }
     </style>
 </head>
 <body>
     <h1>VPN Connector</h1>
     <button id="connectButton">Подключиться к VPN</button>
+    <div id="debug"></div>
     <script>
-        // Проверяем, инициализирован ли Telegram.WebApp
-        if (typeof Telegram.WebApp === 'undefined') {
-            console.error('Telegram WebApp не загружен');
+        // Функция для вывода отладочных сообщений
+        function logToScreen(message) {
+            const debugDiv = document.getElementById('debug');
+            debugDiv.innerText += message + '\n';
+            console.log(message);
+        }
+
+        // Проверка загрузки Telegram WebApp
+        if (typeof Telegram === 'undefined' || typeof Telegram.WebApp === 'undefined') {
+            logToScreen('Ошибка: Telegram WebApp не загружен');
             alert('Ошибка: Telegram WebApp не инициализирован');
         } else {
             Telegram.WebApp.ready();
-            console.log('Telegram WebApp готов');
+            logToScreen('Telegram WebApp готов');
         }
 
+        // Проверка кнопки
         const connectButton = document.getElementById('connectButton');
-        connectButton.addEventListener('click', () => {
-            console.log('Кнопка нажата, отправка данных...');
-            Telegram.WebApp.sendData(JSON.stringify({ action: "get_vpn_config" }));
-            console.log('Данные отправлены');
-            Telegram.WebApp.close();
-        });
+        if (!connectButton) {
+            logToScreen('Ошибка: Кнопка connectButton не найдена');
+            alert('Ошибка: Кнопка не найдена');
+        } else {
+            logToScreen('Кнопка найдена');
+            connectButton.addEventListener('click', () => {
+                logToScreen('Кнопка нажата, отправка данных...');
+                try {
+                    Telegram.WebApp.sendData(JSON.stringify({ action: "get_vpn_config" }));
+                    logToScreen('Данные отправлены');
+                } catch (e) {
+                    logToScreen('Ошибка при отправке данных: ' + e.message);
+                    alert('Ошибка при отправке данных: ' + e.message);
+                }
+                Telegram.WebApp.close();
+            });
+        }
     </script>
 </body>
 </html>
