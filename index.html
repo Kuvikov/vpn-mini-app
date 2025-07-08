@@ -21,39 +21,34 @@
         #powerButton {
             width: 60px;
             height: 60px;
-            border-radius: 50%;
-            background-color: #007bff;
-            color: white;
-            font-size: 30px;
             border: none;
             cursor: pointer;
-            filter: drop-shadow(0 0 10px #007bff) drop-shadow(0 0 20px #007bff);
-            transition: filter 0.3s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto;
+            padding: 0;
+            background: none;
         }
 
-        #powerButton:hover {
-            filter: drop-shadow(0 0 15px #007bff) drop-shadow(0 0 30px #007bff) drop-shadow(0 0 40px #007bff);
+        #powerButton img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
 
         #debug {
             margin-top: 20px;
-            height: 100px;
-            overflow-y: scroll;
-            border: 1px solid var(--tg-theme-secondary-bg-color);
+            max-height: 100px;
+            overflow-y: auto;
             padding: 10px;
             border-radius: 5px;
             text-align: left;
             max-width: 90%;
             margin-left: auto;
             margin-right: auto;
+            background-color: var(--tg-theme-secondary-bg-color);
         }
 
         #debug p {
             margin: 5px 0;
+            font-size: 14px;
         }
 
         #debug p.error {
@@ -63,7 +58,9 @@
 </head>
 <body>
     <h1>VPN Connector</h1>
-    <button id="powerButton">⏻</button>
+    <button id="powerButton">
+        <img src="./power-button-blue.jpg" alt="Подключиться к VPN">
+    </button>
     <div id="debug"></div>
     <script>
         // Функция для вывода отладочных сообщений с типом
