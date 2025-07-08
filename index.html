@@ -1,49 +1,108 @@
 <!DOCTYPE html>
-<html>
+<html lang="ru">
 <head>
     <title>VPN Connector</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
     <style>
-        body { font-family: Arial, sans-serif; text-align: center; margin-top: 50px; }
-        button { padding: 10px 20px; font-size: 16px; cursor: pointer; }
-        #debug { color: red; margin-top: 20px; }
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: var(--tg-theme-bg-color);
+            color: var(--tg-theme-text-color);
+            text-align: center;
+            margin-top: 50px;
+        }
+
+        h1 {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+
+        #powerButton {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background-color: #007bff;
+            color: white;
+            font-size: 30px;
+            border: none;
+            cursor: pointer;
+            filter: drop-shadow(0 0 10px #007bff) drop-shadow(0 0 20px #007bff);
+            transition: filter 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto;
+        }
+
+        #powerButton:hover {
+            filter: drop-shadow(0 0 15px #007bff) drop-shadow(0 0 30px #007bff) drop-shadow(0 0 40px #007bff);
+        }
+
+        #debug {
+            margin-top: 20px;
+            height: 100px;
+            overflow-y: scroll;
+            border: 1px solid var(--tg-theme-secondary-bg-color);
+            padding: 10px;
+            border-radius: 5px;
+            text-align: left;
+            max-width: 90%;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        #debug p {
+            margin: 5px 0;
+        }
+
+        #debug p.error {
+            color: var(--tg-theme-destructive-text-color);
+        }
     </style>
 </head>
 <body>
     <h1>VPN Connector</h1>
-    <button id="connectButton">Подключиться к VPN</button>
+    <button id="powerButton">⏻</button>
     <div id="debug"></div>
     <script>
-        // Функция для вывода отладочных сообщений
-        function logToScreen(message) {
+        // Функция для вывода отладочных сообщений с типом
+        function logToScreen(message, type = 'info') {
             const debugDiv = document.getElementById('debug');
-            debugDiv.innerText += message + '\n';
+            const p = document.createElement('p');
+            p.textContent = message;
+            if (type === 'error') {
+                p.className = 'error';
+            }
+            debugDiv.appendChild(p);
+            debugDiv.scrollTop = debugDiv.scrollHeight;
             console.log(message);
         }
 
         // Проверка загрузки Telegram WebApp
         if (typeof Telegram === 'undefined' || typeof Telegram.WebApp === 'undefined') {
-            logToScreen('Ошибка: Telegram WebApp не загружен');
+            logToScreen('Ошибка: Telegram WebApp не загружен', 'error');
             alert('Ошибка: Telegram WebApp не инициализирован');
         } else {
             Telegram.WebApp.ready();
+            Telegram.WebApp.setHeaderColor('secondary_bg_color');
             logToScreen('Telegram WebApp готов');
         }
 
         // Проверка кнопки
-        const connectButton = document.getElementById('connectButton');
-        if (!connectButton) {
-            logToScreen('Ошибка: Кнопка connectButton не найдена');
+        const powerButton = document.getElementById('powerButton');
+        if (!powerButton) {
+            logToScreen('Ошибка: Кнопка powerButton не найдена', 'error');
             alert('Ошибка: Кнопка не найдена');
         } else {
             logToScreen('Кнопка найдена');
-            connectButton.addEventListener('click', () => {
+            powerButton.addEventListener('click', () => {
                 logToScreen('Кнопка нажата, отправка данных...');
                 try {
                     Telegram.WebApp.sendData(JSON.stringify({ action: "get_vpn_config" }));
                     logToScreen('Данные отправлены');
                 } catch (e) {
-                    logToScreen('Ошибка при отправке данных: ' + e.message);
+                    logToScreen('Ошибка при отправке данных: ' + e.message, 'error');
                     alert('Ошибка при отправке данных: ' + e.message);
                 }
                 Telegram.WebApp.close();
