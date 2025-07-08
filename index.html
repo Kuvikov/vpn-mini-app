@@ -11,26 +11,36 @@
             color: var(--tg-theme-text-color);
             text-align: center;
             margin-top: 50px;
+            transition: background-color 0.5s;
         }
-
         h1 {
             font-size: 24px;
             margin-bottom: 20px;
         }
-
         #powerButton {
-            width: 60px;
-            height: 60px;
+            width: 100px;
+            height: 50px;
             border: none;
             cursor: pointer;
-            padding: 0;
-            background: none;
+            border-radius: 25px;
+            background: linear-gradient(145deg, #4CAF50, #45a049);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            position: relative;
+            margin: 0 auto;
+            font-size: 18px;
+            color: white;
+            font-weight: bold;
+            transition: all 0.3s;
         }
 
-        #powerButton img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
+        #powerButton:hover {
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        #powerButton.active {
+            background: linear-gradient(145deg, #45a049, #4CAF50);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            transform: translateY(3px);
         }
 
         #debug {
@@ -45,12 +55,10 @@
             margin-right: auto;
             background-color: var(--tg-theme-secondary-bg-color);
         }
-
         #debug p {
             margin: 5px 0;
             font-size: 14px;
         }
-
         #debug p.error {
             color: var(--tg-theme-destructive-text-color);
         }
@@ -58,9 +66,7 @@
 </head>
 <body>
     <h1>VPN Connector</h1>
-    <button id="powerButton">
-        <img src="./power-button-blue.jpg" alt="Подключиться к VPN">
-    </button>
+    <button id="powerButton">Connect</button>
     <div id="debug"></div>
     <script>
         // Функция для вывода отладочных сообщений с типом
@@ -75,7 +81,6 @@
             debugDiv.scrollTop = debugDiv.scrollHeight;
             console.log(message);
         }
-
         // Проверка загрузки Telegram WebApp
         if (typeof Telegram === 'undefined' || typeof Telegram.WebApp === 'undefined') {
             logToScreen('Ошибка: Telegram WebApp не загружен', 'error');
@@ -85,7 +90,6 @@
             Telegram.WebApp.setHeaderColor('secondary_bg_color');
             logToScreen('Telegram WebApp готов');
         }
-
         // Проверка кнопки
         const powerButton = document.getElementById('powerButton');
         if (!powerButton) {
@@ -96,8 +100,12 @@
             powerButton.addEventListener('click', () => {
                 logToScreen('Кнопка нажата, отправка данных...');
                 try {
+                    // Изменяем стиль кнопки и фона
+                    powerButton.classList.add('active');
+                    document.body.style.backgroundColor = 'rgba(76, 175, 80, 0.1)';
+
                     Telegram.WebApp.sendData(JSON.stringify({ action: "get_vpn_config" }));
-                    logToScreen('Данные отправлены');
+                    logToScreen('Данные отправлены. VPN активирован.');
                 } catch (e) {
                     logToScreen('Ошибка при отправке данных: ' + e.message, 'error');
                     alert('Ошибка при отправке данных: ' + e.message);
