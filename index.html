@@ -17,31 +17,48 @@
             font-size: 24px;
             margin-bottom: 20px;
         }
-        #powerButton {
-            width: 100px;
-            height: 50px;
-            border: none;
-            cursor: pointer;
-            border-radius: 25px;
-            background: linear-gradient(145deg, #4CAF50, #45a049);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        .switch {
             position: relative;
-            margin: 0 auto;
-            font-size: 18px;
-            color: white;
-            font-weight: bold;
-            transition: all 0.3s;
+            display: inline-block;
+            width: 90px;
+            height: 50px;
         }
 
-        #powerButton:hover {
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
         }
-
-        #powerButton.active {
-            background: linear-gradient(145deg, #45a049, #4CAF50);
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-            transform: translateY(3px);
-        }
+	.slider {
+	    position: absolute;
+	    cursor: pointer;
+	    top: 0;
+	    left: 0;
+	    right: 0;
+	    bottom: 0;
+	    background-color: #ccc;
+	    transition: .4s;
+	    border-radius: 34px;
+	    z-index: 1; /* Убедимся, что ползунок поверх других элементов */
+	}
+	.slider:before {
+	    position: absolute;
+	    content: "";
+	    height: 42px;
+	    width: 42px;
+	    left: 4px;
+	    bottom: 4px;
+	    background-color: white;
+	    transition: .4s;
+	    border-radius: 50%;
+	    z-index: 2; /* Бегунок поверх фона */
+	}
+	input:checked + .slider {
+	    background-color: #00a2ff;
+	}
+	input:checked + .slider:before {
+	    transform: translateX(40px);
+	}
 
         #debug {
             margin-top: 20px;
@@ -66,10 +83,12 @@
 </head>
 <body>
     <h1>VPN Connector</h1>
-    <button id="powerButton">Connect</button>
+    <label class="switch">
+        <input type="checkbox" id="powerButton">
+        <span class="slider"></span>
+    </label>
     <div id="debug"></div>
     <script>
-        // Функция для вывода отладочных сообщений с типом
         function logToScreen(message, type = 'info') {
             const debugDiv = document.getElementById('debug');
             const p = document.createElement('p');
@@ -81,7 +100,7 @@
             debugDiv.scrollTop = debugDiv.scrollHeight;
             console.log(message);
         }
-        // Проверка загрузки Telegram WebApp
+
         if (typeof Telegram === 'undefined' || typeof Telegram.WebApp === 'undefined') {
             logToScreen('Ошибка: Telegram WebApp не загружен', 'error');
             alert('Ошибка: Telegram WebApp не инициализирован');
@@ -90,27 +109,28 @@
             Telegram.WebApp.setHeaderColor('secondary_bg_color');
             logToScreen('Telegram WebApp готов');
         }
-        // Проверка кнопки
+
         const powerButton = document.getElementById('powerButton');
         if (!powerButton) {
             logToScreen('Ошибка: Кнопка powerButton не найдена', 'error');
             alert('Ошибка: Кнопка не найдена');
         } else {
             logToScreen('Кнопка найдена');
-            powerButton.addEventListener('click', () => {
-                logToScreen('Кнопка нажата, отправка данных...');
-                try {
-                    // Изменяем стиль кнопки и фона
-                    powerButton.classList.add('active');
-                    document.body.style.backgroundColor = 'rgba(76, 175, 80, 0.1)';
-
-                    Telegram.WebApp.sendData(JSON.stringify({ action: "get_vpn_config" }));
-                    logToScreen('Данные отправлены. VPN активирован.');
-                } catch (e) {
-                    logToScreen('Ошибка при отправке данных: ' + e.message, 'error');
-                    alert('Ошибка при отправке данных: ' + e.message);
+            powerButton.addEventListener('change', () => {
+                if (powerButton.checked) {
+                    logToScreen('Кнопка нажата, отправка данных...');
+                    try {
+                        document.body.style.backgroundColor = 'rgba(0, 162, 255, 0.1)';
+                        Telegram.WebApp.sendData(JSON.stringify({ action: "get_vpn_config" }));
+                        logToScreen('Данные отправлены. VPN активирован.');
+                    } catch (e) {
+                        logToScreen('Ошибка при отправке данных: ' + e.message, 'error');
+                        alert('Ошибка при отправке данных: ' + e.message);
+                    }
+                } else {
+                    document.body.style.backgroundColor = '';
+                    logToScreen('VPN деактивирован.');
                 }
-                Telegram.WebApp.close();
             });
         }
     </script>
