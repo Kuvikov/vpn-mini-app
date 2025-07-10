@@ -100,7 +100,7 @@
             debugDiv.scrollTop = debugDiv.scrollHeight;
             console.log(message);
         }
-
+    
         if (typeof Telegram === 'undefined' || typeof Telegram.WebApp === 'undefined') {
             logToScreen('Ошибка: Telegram WebApp не загружен', 'error');
             alert('Ошибка: Telegram WebApp не инициализирован');
@@ -109,7 +109,7 @@
             Telegram.WebApp.setHeaderColor('secondary_bg_color');
             logToScreen('Telegram WebApp готов');
         }
-
+    
         const powerButton = document.getElementById('powerButton');
         if (!powerButton) {
             logToScreen('Ошибка: Кнопка powerButton не найдена', 'error');
@@ -121,6 +121,7 @@
                     logToScreen('Кнопка нажата, отправка данных...');
                     try {
                         document.body.style.backgroundColor = 'rgba(0, 162, 255, 0.1)';
+                        logToScreen('Отправка данных...');
                         Telegram.WebApp.sendData(JSON.stringify({ action: "get_vpn_config" }));
                         logToScreen('Данные отправлены. VPN активирован.');
                     } catch (e) {
@@ -133,6 +134,6 @@
                 }
             });
         }
-    </script>
+    </script>    
 </body>
 </html>
